@@ -28,7 +28,7 @@ part './ui/payment_method.dart';
 part './ui/payment_methods_dialog.dart';
 part './ui/web_view_page.dart';
 
-class MyFatoorah extends StatelessWidget {
+class MyFatoorahPay extends StatelessWidget {
   static Future<PaymentResponse> startPayment({
     required BuildContext context,
     //If this is true service charge will be shown in subtitle defaults to false
@@ -119,7 +119,7 @@ class MyFatoorah extends StatelessWidget {
   /// Note if you override leading please use mayBePop instead of pop
   final PreferredSizeWidget Function(BuildContext context)? buildAppBar;
   final DirectPaymentCallBack? directPayment;
-  const MyFatoorah({
+  const MyFatoorahPay({
     Key? key,
     this.builder,
     required this.request,
