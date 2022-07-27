@@ -39,7 +39,6 @@ class __WebViewPageState extends State<_WebViewPage>
   void setStart(Uri? uri) {
     response = _getResponse(uri, false);
     assert((() {
-      print("Start: $uri | Status: ${response.status}");
 
       return true;
     })());
@@ -57,7 +56,6 @@ class __WebViewPageState extends State<_WebViewPage>
   void setError(Uri? uri, String message) {
     response = _getResponse(uri, false);
     assert((() {
-      print("Error: $uri | Status: ${response.status}");
       return true;
     })());
     if (!response.isNothing &&
@@ -76,7 +74,7 @@ class __WebViewPageState extends State<_WebViewPage>
     assert((() {
       log("Stop: $uri | Status: ${response.status}");
 
-      if(response.status != PaymentStatus.None ){
+      if(response.status != PaymentStatus.None && response.paymentId != null){
         popResult();
       }
       /*else if(response.status != PaymentStatus.None && response.paymentId == null){
@@ -106,10 +104,7 @@ class __WebViewPageState extends State<_WebViewPage>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: popResult,
-      child: Scaffold(
-       // appBar: widget.getAppBar != null ? widget.getAppBar!(context) : AppBar(),
-        body: _stack(context),
-      ),
+      child: _stack(context),
     );
   }
 
@@ -178,7 +173,6 @@ class __WebViewPageState extends State<_WebViewPage>
             onLoadStart: (InAppWebViewController controller, Uri? uri) {
              // controller.addWebMessageListener(WebMessageListener(jsObjectName: ''));
               setStart(uri);
-              print('loadHoso');
             },
             onUpdateVisitedHistory: (controller, url, androidIsReload) {
               var _res = _getResponse(url, false);
@@ -209,15 +203,12 @@ class __WebViewPageState extends State<_WebViewPage>
               var e = request.event;
               if (e != null) {
                 var p = (e.loaded! ~/ e.total!) * 100;
-                print(p);
                 setProgress(p);
               }
               return request.action!;
             },
             onAjaxReadyStateChange:
                 (InAppWebViewController controller, request) async {
-              print(request.event);
-
               if (request.readyState == AjaxRequestReadyState.OPENED)
                 setStart(request.url);
               else
@@ -237,8 +228,7 @@ class __WebViewPageState extends State<_WebViewPage>
     var isError = url.contains(widget.errorUrl??'');
     if (!isError && !isSuccess)
       return PaymentResponse(PaymentStatus.None, url: url);
-    PaymentStatus status =
-        isSuccess && !error ? PaymentStatus.Success : PaymentStatus.Error;
+    PaymentStatus status = isSuccess && !error ? PaymentStatus.Success : PaymentStatus.Error;
 
     return PaymentResponse(
       status,

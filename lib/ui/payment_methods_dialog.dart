@@ -6,6 +6,7 @@ typedef DirectPaymentCallBack = Widget Function(
 class LoadingState {
   final bool loading;
   final String? error;
+
   bool get hasError => error != null;
 
   LoadingState(this.loading, this.error);
@@ -26,6 +27,7 @@ class _PaymentMethodsBuilder extends StatefulWidget {
   /// Filter payment methods after fetching it
   final List<PaymentMethod> Function(List<PaymentMethod> methods)?
       filterPaymentMethods;
+
   const _PaymentMethodsBuilder({
     Key? key,
     required this.request,
@@ -39,6 +41,7 @@ class _PaymentMethodsBuilder extends StatefulWidget {
     this.onResult,
     this.directPayment,
   }) : super(key: key);
+
   @override
   _PaymentMethodsBuilderState createState() => _PaymentMethodsBuilderState();
 }
@@ -207,15 +210,22 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
   }
 
   Future<PaymentResponse> _showWebView(String url) async {
-    return showModalBottomSheet(context: context, builder: (context) =>_WebViewPage(
-      uri: Uri.parse(url),
-      getAppBar: widget.getAppBar,
-      errorChild: widget.errorChild,
-      successChild: widget.successChild,
-      successUrl: widget.request.successUrl ,
-      errorUrl: widget.request.errorUrl,
-      afterPaymentBehaviour: widget.afterPaymentBehaviour,
-    ), ) .then((value) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        isDismissible: false,
+        context: context,
+        builder: (context) => Container(
+              height: MediaQuery.of(context).size.height * 0.8,
+              child: _WebViewPage(
+                uri: Uri.parse(url),
+                getAppBar: widget.getAppBar,
+                errorChild: widget.errorChild,
+                successChild: widget.successChild,
+                successUrl: widget.request.successUrl,
+                errorUrl: widget.request.errorUrl,
+                afterPaymentBehaviour: widget.afterPaymentBehaviour,
+              ),
+            )).then((value) {
       if (widget.onResult == null) {
         if (value is PaymentResponse) {
           if (value.status != PaymentStatus.None) {
