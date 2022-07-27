@@ -75,9 +75,13 @@ class __WebViewPageState extends State<_WebViewPage>
     response = _getResponse(uri, false);
     assert((() {
       log("Stop: $uri | Status: ${response.status}");
-      if(response.status != PaymentStatus.None && response.paymentId != null){
+
+      if(response.status != PaymentStatus.None ){
         popResult();
       }
+      /*else if(response.status != PaymentStatus.None && response.paymentId == null){
+        popResult();
+      }*/
       return true;
     })());
     if (!response.isNothing &&
@@ -169,7 +173,7 @@ class __WebViewPageState extends State<_WebViewPage>
             ),
             onWebViewCreated: (InAppWebViewController controller) {
               this.controller = controller;
-              
+
             },
             onLoadStart: (InAppWebViewController controller, Uri? uri) {
              // controller.addWebMessageListener(WebMessageListener(jsObjectName: ''));

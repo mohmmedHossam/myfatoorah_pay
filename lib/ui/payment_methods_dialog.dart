@@ -207,6 +207,28 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
   }
 
   Future<PaymentResponse> _showWebView(String url) async {
+    return showModalBottomSheet(context: context, builder: (context) =>_WebViewPage(
+      uri: Uri.parse(url),
+      getAppBar: widget.getAppBar,
+      errorChild: widget.errorChild,
+      successChild: widget.successChild,
+      successUrl: widget.request.successUrl ,
+      errorUrl: widget.request.errorUrl,
+      afterPaymentBehaviour: widget.afterPaymentBehaviour,
+    ), ) .then((value) {
+      if (widget.onResult == null) {
+        if (value is PaymentResponse) {
+          if (value.status != PaymentStatus.None) {
+            Navigator.of(context).pop(value);
+          }
+        }
+      } else {
+        if (value is PaymentResponse) widget.onResult!(value);
+      }
+
+      return value;
+    });
+    /*
     return Navigator.push(
       context,
       MaterialPageRoute(
@@ -233,6 +255,7 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
 
       return value;
     });
+     */
   }
 
   Widget buildError() {
