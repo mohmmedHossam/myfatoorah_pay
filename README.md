@@ -43,15 +43,15 @@ myfatoorah_pay: any
 ## Dialog Usage
 
 ```dart
-import 'package:my_fatoorah/my_fatoorah.dart';
+import 'package:myfatoorah_pay/myfatoorah_pay.dart';
 import 'dart:developer';
 
- var response = await MyFatoorah.startPayment(
+ var response = await MyFatoorahPay.startPayment(
                 context: context,
                 request: MyfatoorahRequest.test(
                   currencyIso: Country.SaudiArabia,
                   invoiceAmount: 100,
-                  language: ApiLanguage.Arabic,
+                  language: ApiLanguage.English,
                   token: "Your token here",
                 ),
               );

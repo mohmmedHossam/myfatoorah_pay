@@ -212,7 +212,7 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
   Future<PaymentResponse> _showWebView(String url) async {
     return showModalBottomSheet(
         isScrollControlled: true,
-        isDismissible: false,
+       // isDismissible: false,
         context: context,
         builder: (context) => Container(
               height: MediaQuery.of(context).size.height * 0.8,
