@@ -6,6 +6,7 @@ class _WebViewPage extends StatefulWidget {
   final AfterPaymentBehaviour afterPaymentBehaviour;
   final Widget? errorChild;
   final Widget? successChild;
+
   const _WebViewPage({
     Key? key,
     required this.uri,
@@ -14,6 +15,7 @@ class _WebViewPage extends StatefulWidget {
     this.successChild,
     this.getAppBar,
   }) : super(key: key);
+
   @override
   __WebViewPageState createState() => __WebViewPageState();
 }
@@ -23,6 +25,7 @@ class __WebViewPageState extends State<_WebViewPage>
   late InAppWebViewController controller;
   double? progress = 0;
   PaymentResponse response = PaymentResponse(PaymentStatus.None);
+
   Future<bool> popResult() async {
     if (response.status == PaymentStatus.None && await controller.canGoBack()) {
       controller.goBack();
@@ -32,12 +35,17 @@ class __WebViewPageState extends State<_WebViewPage>
     return false;
   }
 
-  void setStart(Uri? uri , InAppWebViewController controller)async  {
+  bool show = false;
+  String? message;
+
+  void setStart(Uri? uri, InAppWebViewController controller) async {
     response = await _getResponse(uri, controller);
     assert((() {
       return true;
     })());
-    if (!response.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.BeforeCallbackExecution) {
+    if (!response.isNothing &&
+        widget.afterPaymentBehaviour ==
+            AfterPaymentBehaviour.BeforeCallbackExecution) {
       Navigator.of(context).pop(response);
     } else {
       setState(() {
@@ -46,12 +54,15 @@ class __WebViewPageState extends State<_WebViewPage>
     }
   }
 
-  void setError(Uri? uri, String message, InAppWebViewController controller) async{
-    response =await _getResponse(uri, controller);
+  void setError(
+      Uri? uri, String message, InAppWebViewController controller) async {
+    response = await _getResponse(uri, controller);
     assert((() {
       return true;
     })());
-    if (!response.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.BeforeCallbackExecution) {
+    if (!response.isNothing &&
+        widget.afterPaymentBehaviour ==
+            AfterPaymentBehaviour.BeforeCallbackExecution) {
       Navigator.of(context).pop(response);
     } else {
       setState(() {
@@ -60,16 +71,22 @@ class __WebViewPageState extends State<_WebViewPage>
     }
   }
 
-  void setStop(Uri? uri , InAppWebViewController controller , bool loadStop) async{
-    response =await _getResponse(uri, controller);
+  void setStop(
+      Uri? uri, InAppWebViewController controller, bool loadStop) async {
+    response = await _getResponse(uri, controller);
 
-    if(response.status!= PaymentStatus.None && loadStop){
-      popResult();
-    }
+    Future.delayed(const Duration(seconds: 9), () {
+      if (response.status != PaymentStatus.None && loadStop) {
+        popResult();
+      }
+    });
+
     assert((() {
       return true;
     })());
-    if (!response.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.AfterCallbackExecution) {
+    if (!response.isNothing &&
+        widget.afterPaymentBehaviour ==
+            AfterPaymentBehaviour.AfterCallbackExecution) {
       Navigator.of(context).pop(response);
     } else {
       setState(() {
@@ -85,11 +102,20 @@ class __WebViewPageState extends State<_WebViewPage>
   }
 
   void onBack() {}
+
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: popResult,
-      child: _stack(context),
+      child: Scaffold( appBar: AppBar(leading : Container() ,centerTitle: true, title: Text(message??''),),body: _stack(context)),
     );
   }
 
@@ -123,108 +149,126 @@ class __WebViewPageState extends State<_WebViewPage>
             duration: Duration(milliseconds: 300),
             child: child ?? SizedBox(),
           ),
-        )
+        ),
+
+
+
       ],
     );
   }
 
-  Column _build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AnimatedSize(
-          duration: Duration(milliseconds: 300),
-          child: SizedBox(
-            height: progress == null ? 0 : 5,
-            child: LinearProgressIndicator(value: progress ?? 0),
-          ),
-        ),
-        Expanded(
-          child: InAppWebView(
-            initialUrlRequest: URLRequest(url: widget.uri),
-            initialOptions: InAppWebViewGroupOptions(
-              crossPlatform: InAppWebViewOptions(
-                javaScriptEnabled: true,
-                javaScriptCanOpenWindowsAutomatically: true,
-              ),
-              ios: IOSInAppWebViewOptions(
-                applePayAPIEnabled: true,
-              ),
+  Widget _build(BuildContext context) {
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AnimatedSize(
+            duration: Duration(milliseconds: 300),
+            child: SizedBox(
+              height: progress == null ? 0 : 5,
+              child: LinearProgressIndicator(value: progress ?? 0),
             ),
-            onWebViewCreated: (InAppWebViewController controller) {
-              this.controller = controller;
-
-            },
-            onLoadStart: (InAppWebViewController controller, Uri? uri) {
-
-              setStart(uri , controller);
-            },
-            onUpdateVisitedHistory: (controller, url, androidIsReload) {
-
-            },
-            onLoadError: (InAppWebViewController controller, Uri? uri,
-                int status, String error) {
-              setError(uri, error, controller);
-            },
-            onLoadHttpError: (InAppWebViewController controller, Uri? uri,
-                int status, String error) {
-              setError(uri, error, controller);
-            },
-            onLoadStop: (InAppWebViewController controller, Uri? uri) {
-              setStop(uri , controller , true);
-            },
-            onProgressChanged:
-                (InAppWebViewController controller, int progress) {
-              setProgress(progress);
-            },
-            onAjaxProgress: (InAppWebViewController controller, request) async {
-              var e = request.event;
-              if (e != null) {
-                var p = (e.loaded! ~/ e.total!) * 100;
-                setProgress(p);
-              }
-              return request.action!;
-            },
-            onAjaxReadyStateChange:
-                (InAppWebViewController controller, request) async {
-              if (request.readyState == AjaxRequestReadyState.OPENED) {
-                setStart(request.url , controller);
-              } else {
-                setStop(request.url , controller , false);
-              }
-              return request.action;
-            },
           ),
-        ),
-      ],
+          Expanded(
+            child: InAppWebView(
+              initialUrlRequest: URLRequest(url: widget.uri),
+              initialOptions: InAppWebViewGroupOptions(
+                crossPlatform: InAppWebViewOptions(
+                  javaScriptEnabled: true,
+                  javaScriptCanOpenWindowsAutomatically: true,
+                ),
+                ios: IOSInAppWebViewOptions(
+                  applePayAPIEnabled: true,
+                ),
+              ),
+              onWebViewCreated: (InAppWebViewController controller) {
+                this.controller = controller;
+              },
+              onLoadStart: (InAppWebViewController controller, Uri? uri) {
+                setStart(uri, controller);
+              },
+              onUpdateVisitedHistory: (controller, url, androidIsReload) {},
+              onLoadError: (InAppWebViewController controller, Uri? uri,
+                  int status, String error) {
+                setError(uri, error, controller);
+              },
+              onLoadHttpError: (InAppWebViewController controller, Uri? uri,
+                  int status, String error) {
+                setError(uri, error, controller);
+              },
+              onLoadStop: (InAppWebViewController controller, Uri? uri) {
+                setStop(uri, controller, true);
+              },
+              onProgressChanged:
+                  (InAppWebViewController controller, int progress) {
+                setProgress(progress);
+              },
+              onAjaxProgress: (InAppWebViewController controller, request) async {
+                var e = request.event;
+                if (e != null) {
+                  var p = (e.loaded! ~/ e.total!) * 100;
+                  setProgress(p);
+                }
+                return request.action!;
+              },
+              onAjaxReadyStateChange:
+                  (InAppWebViewController controller, request) async {
+                if (request.readyState == AjaxRequestReadyState.OPENED) {
+                  setStart(request.url, controller);
+                } else {
+                  setStop(request.url, controller, false);
+                }
+                return request.action;
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Future<PaymentResponse> _getResponse(Uri? uri, InAppWebViewController controller)async {
+  Future<PaymentResponse> _getResponse(
+      Uri? uri, InAppWebViewController controller) async {
     PaymentResponse? paymentResponse;
-    if(uri == null){
-      paymentResponse =PaymentResponse(
+    if (uri == null) {
+      paymentResponse = PaymentResponse(
         PaymentStatus.None,
         paymentId: null,
         url: null,
       );
-    }else{
-      if(uri.toString().contains('https://demo.myfatoorah.com/En/KWT/PayInvoice/Result')) {
-        await controller.evaluateJavascript(source: "document.getElementsByClassName('white-text')[0]['outerText'];").then((value) {
-          if(value.toString().contains('PAID')){
+    } else {
+      if (uri
+          .toString()
+          .contains('https://demo.myfatoorah.com/En/KWT/PayInvoice/Result')) {
+        await controller
+            .evaluateJavascript(
+                source:
+                    "document.getElementsByClassName('white-text')[0]['outerText'];")
+            .then((value) {
+          if (value.toString().contains('PAID')) {
             var isSuccess = true;
             var isError = false;
-            PaymentStatus status = isSuccess && !isError ? PaymentStatus.Success : PaymentStatus.Error;
+            PaymentStatus status = isSuccess && !isError
+                ? PaymentStatus.Success
+                : PaymentStatus.Error;
+            setState((){
+              message = 'Redirect on 5 secound';
+            });
             paymentResponse = PaymentResponse(
               status,
               paymentId: uri.queryParameters["paymentId"],
               url: uri.toString(),
             );
-          }else{
+          } else {
             var isSuccess = false;
             var isError = true;
-            PaymentStatus status = isSuccess && !isError ? PaymentStatus.Success : PaymentStatus.Error;
-            paymentResponse =  PaymentResponse(
+            setState((){
+              message = 'Redirect on 5 secound';
+            });
+            PaymentStatus status = isSuccess && !isError
+                ? PaymentStatus.Success
+                : PaymentStatus.Error;
+            paymentResponse = PaymentResponse(
               status,
               paymentId: uri.queryParameters["paymentId"],
               url: uri.toString(),
@@ -233,10 +277,11 @@ class __WebViewPageState extends State<_WebViewPage>
         });
       }
     }
-    return paymentResponse?? PaymentResponse(
-      PaymentStatus.None,
-      paymentId: null,
-      url: uri.toString(),
-    );
+    return paymentResponse ??
+        PaymentResponse(
+          PaymentStatus.None,
+          paymentId: null,
+          url: uri.toString(),
+        );
   }
 }

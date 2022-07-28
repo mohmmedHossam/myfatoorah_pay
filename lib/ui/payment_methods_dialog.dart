@@ -210,18 +210,22 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
   }
 
   Future<PaymentResponse> _showWebView(String url) async {
+    /*
     return showModalBottomSheet(
         isScrollControlled: true,
        // isDismissible: false,
         context: context,
         builder: (context) => Container(
               height: MediaQuery.of(context).size.height * 0.8,
-              child: _WebViewPage(
-                uri: Uri.parse(url),
-                getAppBar: widget.getAppBar,
-                errorChild: widget.errorChild,
-                successChild: widget.successChild,
-                afterPaymentBehaviour: widget.afterPaymentBehaviour,
+              child: Padding(
+                padding:  EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: _WebViewPage(
+                  uri: Uri.parse(url),
+                  getAppBar: widget.getAppBar,
+                  errorChild: widget.errorChild,
+                  successChild: widget.successChild,
+                  afterPaymentBehaviour: widget.afterPaymentBehaviour,
+                ),
               ),
             )).then((value) {
       if (widget.onResult == null) {
@@ -236,17 +240,14 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
 
       return value;
     });
-    /*
+    */
+
     return Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => _WebViewPage(
           uri: Uri.parse(url),
           getAppBar: widget.getAppBar,
-          errorChild: widget.errorChild,
-          successChild: widget.successChild,
-          successUrl: widget.request.successUrl ,
-          errorUrl: widget.request.errorUrl,
           afterPaymentBehaviour: widget.afterPaymentBehaviour,
         ),
       ),
@@ -263,7 +264,6 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
 
       return value;
     });
-     */
   }
 
   Widget buildError() {
