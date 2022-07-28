@@ -79,10 +79,6 @@ class MyfatoorahRequest {
   ///  </dict>
   /// ```
 
-  final String? successUrl;
-
-  /// url to redirect in case of error  please see the note on successUrl
-  final String? errorUrl;
 
   /// The currency code that you need to charge your customer through
   final Country currencyIso;
@@ -129,8 +125,6 @@ class MyfatoorahRequest {
     required this.token,
     required this.language,
     required this.invoiceAmount,
-    this.successUrl,
-    this.errorUrl,
     required this.currencyIso,
     this.shippingConsignee,
     this.mobileCountryCode,
@@ -155,8 +149,6 @@ class MyfatoorahRequest {
     required this.token,
     required this.language,
     required this.invoiceAmount,
-    this.successUrl,
-    this.errorUrl,
     required this.currencyIso,
     this.shippingConsignee,
     this.mobileCountryCode,
@@ -179,8 +171,6 @@ class MyfatoorahRequest {
     required this.token,
     required this.language,
     required this.invoiceAmount,
-    this.successUrl,
-    this.errorUrl,
     required this.currencyIso,
     this.shippingConsignee,
     this.mobileCountryCode,
@@ -208,8 +198,6 @@ class MyfatoorahRequest {
       "CustomerMobile": customerMobile,
       "CustomerEmail": customerEmail,
       "InvoiceValue": invoiceAmount,
-      "CallBackUrl": successUrl,
-      "ErrorUrl": errorUrl,
       "Language": _languages[language],
       "CustomerReference": customerReference,
       "CustomerCivilId": customerCivilId,

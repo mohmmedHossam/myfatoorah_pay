@@ -221,8 +221,6 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
                 getAppBar: widget.getAppBar,
                 errorChild: widget.errorChild,
                 successChild: widget.successChild,
-                successUrl: widget.request.successUrl,
-                errorUrl: widget.request.errorUrl,
                 afterPaymentBehaviour: widget.afterPaymentBehaviour,
               ),
             )).then((value) {

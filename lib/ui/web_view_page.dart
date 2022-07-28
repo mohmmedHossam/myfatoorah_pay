@@ -2,8 +2,6 @@ part of myfatoorah_pay;
 
 class _WebViewPage extends StatefulWidget {
   final Uri uri;
-  final String? successUrl;
-  final String? errorUrl;
   final PreferredSizeWidget Function(BuildContext context)? getAppBar;
   final AfterPaymentBehaviour afterPaymentBehaviour;
   final Widget? errorChild;
@@ -11,8 +9,6 @@ class _WebViewPage extends StatefulWidget {
   const _WebViewPage({
     Key? key,
     required this.uri,
-    this.successUrl,
-    this.errorUrl,
     required this.afterPaymentBehaviour,
     this.errorChild,
     this.successChild,
@@ -36,15 +32,12 @@ class __WebViewPageState extends State<_WebViewPage>
     return false;
   }
 
-  void setStart(Uri? uri) {
-    response = _getResponse(uri, false);
+  void setStart(Uri? uri , InAppWebViewController controller)async  {
+    response = await _getResponse(uri, controller);
     assert((() {
-
       return true;
     })());
-    if (!response.isNothing &&
-        widget.afterPaymentBehaviour ==
-            AfterPaymentBehaviour.BeforeCallbackExecution) {
+    if (!response.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.BeforeCallbackExecution) {
       Navigator.of(context).pop(response);
     } else {
       setState(() {
@@ -53,14 +46,12 @@ class __WebViewPageState extends State<_WebViewPage>
     }
   }
 
-  void setError(Uri? uri, String message) {
-    response = _getResponse(uri, false);
+  void setError(Uri? uri, String message, InAppWebViewController controller) async{
+    response =await _getResponse(uri, controller);
     assert((() {
       return true;
     })());
-    if (!response.isNothing &&
-        widget.afterPaymentBehaviour ==
-            AfterPaymentBehaviour.BeforeCallbackExecution) {
+    if (!response.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.BeforeCallbackExecution) {
       Navigator.of(context).pop(response);
     } else {
       setState(() {
@@ -69,22 +60,16 @@ class __WebViewPageState extends State<_WebViewPage>
     }
   }
 
-  void setStop(Uri? uri) {
-    response = _getResponse(uri, false);
-    assert((() {
-      log("Stop: $uri | Status: ${response.status}");
+  void setStop(Uri? uri , InAppWebViewController controller , bool loadStop) async{
+    response =await _getResponse(uri, controller);
 
-      if(response.status != PaymentStatus.None && response.paymentId != null){
-        popResult();
-      }
-      /*else if(response.status != PaymentStatus.None && response.paymentId == null){
-        popResult();
-      }*/
+    if(response.status!= PaymentStatus.None && loadStop){
+      popResult();
+    }
+    assert((() {
       return true;
     })());
-    if (!response.isNothing &&
-        widget.afterPaymentBehaviour ==
-            AfterPaymentBehaviour.AfterCallbackExecution) {
+    if (!response.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.AfterCallbackExecution) {
       Navigator.of(context).pop(response);
     } else {
       setState(() {
@@ -171,29 +156,22 @@ class __WebViewPageState extends State<_WebViewPage>
 
             },
             onLoadStart: (InAppWebViewController controller, Uri? uri) {
-             // controller.addWebMessageListener(WebMessageListener(jsObjectName: ''));
-              setStart(uri);
+
+              setStart(uri , controller);
             },
             onUpdateVisitedHistory: (controller, url, androidIsReload) {
-              var _res = _getResponse(url, false);
-              if (!_res.isNothing && widget.afterPaymentBehaviour == AfterPaymentBehaviour.BeforeCallbackExecution) {
-                Navigator.of(context).pop(_res);
-              } else if (!_res.isNothing && response.isNothing) {
-                setState(() {
-                  response = _res;
-                });
-              }
+
             },
             onLoadError: (InAppWebViewController controller, Uri? uri,
                 int status, String error) {
-              setError(uri, error);
+              setError(uri, error, controller);
             },
             onLoadHttpError: (InAppWebViewController controller, Uri? uri,
                 int status, String error) {
-              setError(uri, error);
+              setError(uri, error, controller);
             },
             onLoadStop: (InAppWebViewController controller, Uri? uri) {
-              setStop(uri);
+              setStop(uri , controller , true);
             },
             onProgressChanged:
                 (InAppWebViewController controller, int progress) {
@@ -209,10 +187,11 @@ class __WebViewPageState extends State<_WebViewPage>
             },
             onAjaxReadyStateChange:
                 (InAppWebViewController controller, request) async {
-              if (request.readyState == AjaxRequestReadyState.OPENED)
-                setStart(request.url);
-              else
-                setStop(request.url);
+              if (request.readyState == AjaxRequestReadyState.OPENED) {
+                setStart(request.url , controller);
+              } else {
+                setStop(request.url , controller , false);
+              }
               return request.action;
             },
           ),
@@ -221,19 +200,43 @@ class __WebViewPageState extends State<_WebViewPage>
     );
   }
 
-  PaymentResponse _getResponse(Uri? uri, bool error) {
-    if (uri == null) return PaymentResponse(PaymentStatus.None);
-    var url = uri.toString();
-    var isSuccess = url.contains(widget.successUrl??'');
-    var isError = url.contains(widget.errorUrl??'');
-    if (!isError && !isSuccess)
-      return PaymentResponse(PaymentStatus.None, url: url);
-    PaymentStatus status = isSuccess && !error ? PaymentStatus.Success : PaymentStatus.Error;
-
-    return PaymentResponse(
-      status,
-      paymentId: uri.queryParameters["paymentId"],
-      url: url,
+  Future<PaymentResponse> _getResponse(Uri? uri, InAppWebViewController controller)async {
+    PaymentResponse? paymentResponse;
+    if(uri == null){
+      paymentResponse =PaymentResponse(
+        PaymentStatus.None,
+        paymentId: null,
+        url: null,
+      );
+    }else{
+      if(uri.toString().contains('https://demo.myfatoorah.com/En/KWT/PayInvoice/Result')) {
+        await controller.evaluateJavascript(source: "document.getElementsByClassName('white-text')[0]['outerText'];").then((value) {
+          if(value.toString().contains('PAID')){
+            var isSuccess = true;
+            var isError = false;
+            PaymentStatus status = isSuccess && !isError ? PaymentStatus.Success : PaymentStatus.Error;
+            paymentResponse = PaymentResponse(
+              status,
+              paymentId: uri.queryParameters["paymentId"],
+              url: uri.toString(),
+            );
+          }else{
+            var isSuccess = false;
+            var isError = true;
+            PaymentStatus status = isSuccess && !isError ? PaymentStatus.Success : PaymentStatus.Error;
+            paymentResponse =  PaymentResponse(
+              status,
+              paymentId: uri.queryParameters["paymentId"],
+              url: uri.toString(),
+            );
+          }
+        });
+      }
+    }
+    return paymentResponse?? PaymentResponse(
+      PaymentStatus.None,
+      paymentId: null,
+      url: uri.toString(),
     );
   }
 }
