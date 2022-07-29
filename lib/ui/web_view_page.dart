@@ -35,7 +35,10 @@ class __WebViewPageState extends State<_WebViewPage>
     return false;
   }
 
-  bool show = false;
+  int timerCount = 5;
+
+  bool success = false, failed = false;
+
   String? message;
 
   void setStart(Uri? uri, InAppWebViewController controller) async {
@@ -74,13 +77,9 @@ class __WebViewPageState extends State<_WebViewPage>
   void setStop(
       Uri? uri, InAppWebViewController controller, bool loadStop) async {
     response = await _getResponse(uri, controller);
-
-    Future.delayed(const Duration(seconds: 9), () {
-      if (response.status != PaymentStatus.None && loadStop) {
-        popResult();
-      }
-    });
-
+    if (response.status != PaymentStatus.None && loadStop) {
+      startTimer(response, loadStop);
+    }
     assert((() {
       return true;
     })());
@@ -103,19 +102,40 @@ class __WebViewPageState extends State<_WebViewPage>
 
   void onBack() {}
 
+  late Timer _timer;
+  int _start = 5;
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    _timer.cancel();
     super.dispose();
+  }
 
+  void startTimer(response, loadStop) {
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+            popResult();
+          });
+        } else {
+          setState(() {
+            _start--;
+            message = 'Redirect on $_start secound';
+          });
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: popResult,
-      child: Scaffold( appBar: AppBar(leading : Container() ,centerTitle: true, title: Text(message??''),),body: _stack(context)),
+      child: Scaffold( appBar: AppBar(centerTitle: true, title: Text(message??''),),body: _stack(context)),
     );
   }
 
@@ -150,9 +170,6 @@ class __WebViewPageState extends State<_WebViewPage>
             child: child ?? SizedBox(),
           ),
         ),
-
-
-
       ],
     );
   }
@@ -203,7 +220,8 @@ class __WebViewPageState extends State<_WebViewPage>
                   (InAppWebViewController controller, int progress) {
                 setProgress(progress);
               },
-              onAjaxProgress: (InAppWebViewController controller, request) async {
+              onAjaxProgress:
+                  (InAppWebViewController controller, request) async {
                 var e = request.event;
                 if (e != null) {
                   var p = (e.loaded! ~/ e.total!) * 100;
@@ -244,15 +262,16 @@ class __WebViewPageState extends State<_WebViewPage>
             .evaluateJavascript(
                 source:
                     "document.getElementsByClassName('white-text')[0]['outerText'];")
-            .then((value) {
+            .then((value) async {
           if (value.toString().contains('PAID')) {
             var isSuccess = true;
             var isError = false;
             PaymentStatus status = isSuccess && !isError
                 ? PaymentStatus.Success
                 : PaymentStatus.Error;
-            setState((){
-              message = 'Redirect on 5 secound';
+            setState(() {
+              success = true;
+              message = 'Redirect on $_start secound';
             });
             paymentResponse = PaymentResponse(
               status,
@@ -262,8 +281,9 @@ class __WebViewPageState extends State<_WebViewPage>
           } else {
             var isSuccess = false;
             var isError = true;
-            setState((){
-              message = 'Redirect on 5 secound';
+            setState(() {
+              failed = true;
+              message = 'Redirect on $_start secound';
             });
             PaymentStatus status = isSuccess && !isError
                 ? PaymentStatus.Success

@@ -1,6 +1,6 @@
 name: myfatoorah_pay
 description: implement MyFatoorah Sdk for android & ios.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/mohmmedHossam/myfatoorah_pay.git
 
 environment:
