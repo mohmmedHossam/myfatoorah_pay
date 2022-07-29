@@ -1,6 +1,6 @@
 # myfatoorah_pay
 
-My Fatoorah Payment
+My Fatoorah Pay
 
 ## Getting Started
 

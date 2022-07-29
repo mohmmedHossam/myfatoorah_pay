@@ -1,5 +1,5 @@
 name: myfatoorah_pay
-description: implement MyFatoorah Sdk for android & ios.
+description: implement MyFatoorah Sdk for android & ios devoloped By SMZ team adding redirect automaticly with payment respose=>(PaymenStatus , PaymentId , Url) success or failed case when back you can controll what will show to user when success or failed paid .
 version: 1.0.1
 homepage: https://github.com/mohmmedHossam/myfatoorah_pay.git
 
