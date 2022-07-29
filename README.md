@@ -9,8 +9,8 @@ My Fatoorah Payment
   <tr>
     <td>Payment methods</td>
      <td>Card inputs</td>
-     <td>Acs Emulator</td>
-     <td>result</td>
+     <td>result Success</td>
+     <td>result Failed</td>
   </tr>
 
   <tr>
