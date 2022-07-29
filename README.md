@@ -5,6 +5,21 @@ My Fatoorah Payment
 ## Getting Started
 
 ## Installation
+<table>
+  <tr>
+    <td>Payment methods</td>
+     <td>Card inputs</td>
+     <td>Acs Emulator</td>
+     <td>result</td>
+  </tr>
+
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/mo-ah-dawood/my_fatoorah/master/screen_1.png"></td>
+    <td><img src="https://raw.githubusercontent.com/mo-ah-dawood/my_fatoorah/master/screen_2.png"></td>
+    <td><img width="210" src="https://user-images.githubusercontent.com/29352955/164155489-681b62c0-9cff-4ff6-90e8-c9a11db9ffa6.png"></td>
+    <td><img src="https://raw.githubusercontent.com/mo-ah-dawood/my_fatoorah/master/screen_3.png"></td>
+  </tr>
+ </table>
 
 ```dart
 # add this to your pubspec.yaml
