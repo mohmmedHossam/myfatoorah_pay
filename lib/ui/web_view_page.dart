@@ -4,15 +4,12 @@ class _WebViewPage extends StatefulWidget {
   final Uri uri;
   final PreferredSizeWidget Function(BuildContext context)? getAppBar;
   final AfterPaymentBehaviour afterPaymentBehaviour;
-  final Widget? errorChild;
-  final Widget? successChild;
+
 
   const _WebViewPage({
     Key? key,
     required this.uri,
     required this.afterPaymentBehaviour,
-    this.errorChild,
-    this.successChild,
     this.getAppBar,
   }) : super(key: key);
 
@@ -140,21 +137,9 @@ class __WebViewPageState extends State<_WebViewPage>
   }
 
   Widget _stack(BuildContext context) {
-    if (widget.successChild == null && widget.errorChild == null) {
-      return _build(context);
-    }
+
     Widget? child;
-    if (response.isSuccess && widget.successChild != null) {
-      child = Material(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: widget.successChild,
-      );
-    } else if (response.isError && widget.errorChild != null) {
-      child = Material(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: widget.errorChild,
-      );
-    }
+
     return Stack(
       fit: StackFit.expand,
       children: [
