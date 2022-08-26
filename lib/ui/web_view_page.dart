@@ -132,7 +132,7 @@ class __WebViewPageState extends State<_WebViewPage>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: popResult,
-      child: Scaffold( appBar: AppBar(centerTitle: true, title: Text(message??''),),body: _stack(context)),
+      child: Scaffold( appBar: AppBar(centerTitle: true, title: Text(message??''), backgroundColor: Colors.blueAccent,),body: _stack(context)),
     );
   }
 
