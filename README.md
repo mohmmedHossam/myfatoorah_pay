@@ -14,10 +14,10 @@ My Fatoorah Pay
   </tr>
 
   <tr>
-    <td><img src="https://github.com/mohmmedHossam/myfatoorah_pay/blob/master/1.png?raw=true"></td>
-    <td><img src="https://github.com/mohmmedHossam/myfatoorah_pay/blob/master/2.png?raw=true"></td>
-    <td><img src="https://github.com/mohmmedHossam/myfatoorah_pay/blob/master/3.png?raw=true"></td>
-    <td><img src="https://github.com/mohmmedHossam/myfatoorah_pay/blob/master/4.png?raw=true"></td>
+    <td><img src="https://raw.githubusercontent.com/mohmmedHossam/myfatoorah_pay/master/1.png"></td>
+    <td><img src="https://raw.githubusercontent.com/mohmmedHossam/myfatoorah_pay/master/2.png"></td>
+    <td><img src="https://raw.githubusercontent.com/mohmmedHossam/myfatoorah_pay/master/3.png"></td>
+    <td><img src="https://raw.githubusercontent.com/mohmmedHossam/myfatoorah_pay/master/4.png"></td>
   </tr>
  </table>
 
