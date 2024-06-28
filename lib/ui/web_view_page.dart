@@ -4,12 +4,14 @@ class _WebViewPage extends StatefulWidget {
   final Uri uri;
   final PreferredSizeWidget Function(BuildContext context)? getAppBar;
   final AfterPaymentBehaviour afterPaymentBehaviour;
+  final MyfatoorahRequest myFatoorahRequest;
 
 
   const _WebViewPage({
     Key? key,
     required this.uri,
     required this.afterPaymentBehaviour,
+    required this.myFatoorahRequest,
     this.getAppBar,
   }) : super(key: key);
 
@@ -32,9 +34,9 @@ class __WebViewPageState extends State<_WebViewPage>
     return false;
   }
 
-  int timerCount = 5;
+  int timerCount = 3;
 
-  bool success = false, failed = false;
+  //bool success = false, failed = false;
 
   String? message;
 
@@ -54,8 +56,8 @@ class __WebViewPageState extends State<_WebViewPage>
     }
   }
 
-  void setError(
-      Uri? uri, String message, InAppWebViewController controller) async {
+  void setError(Uri? uri, String message,
+      InAppWebViewController controller) async {
     response = await _getResponse(uri, controller);
     assert((() {
       return true;
@@ -71,8 +73,8 @@ class __WebViewPageState extends State<_WebViewPage>
     }
   }
 
-  void setStop(
-      Uri? uri, InAppWebViewController controller, bool loadStop) async {
+  void setStop(Uri? uri, InAppWebViewController controller,
+      bool loadStop) async {
     response = await _getResponse(uri, controller);
     if (response.status != PaymentStatus.None && loadStop) {
       startTimer(response, loadStop);
@@ -112,12 +114,10 @@ class __WebViewPageState extends State<_WebViewPage>
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
-      (Timer timer) {
+          (Timer timer) {
         if (_start == 0) {
-          setState(() {
             timer.cancel();
             popResult();
-          });
         } else {
           setState(() {
             _start--;
@@ -132,12 +132,13 @@ class __WebViewPageState extends State<_WebViewPage>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: popResult,
-      child: Scaffold( appBar: AppBar(centerTitle: true, title: Text(message??''), backgroundColor: Colors.blueAccent,),body: _stack(context)),
+      child: Scaffold(appBar: AppBar(centerTitle: true,
+        title: Text(message ?? ''),
+        backgroundColor: Colors.blueAccent,), body: _stack(context)),
     );
   }
 
   Widget _stack(BuildContext context) {
-
     Widget? child;
 
     return Stack(
@@ -230,63 +231,97 @@ class __WebViewPageState extends State<_WebViewPage>
     );
   }
 
-  Future<PaymentResponse> _getResponse(
-      Uri? uri, InAppWebViewController controller) async {
-    PaymentResponse? paymentResponse;
+  Future<PaymentResponse> _getResponse(Uri? uri,
+      InAppWebViewController controller) async {
     if (uri == null) {
-      paymentResponse = PaymentResponse(
+      return PaymentResponse(
         PaymentStatus.None,
         paymentId: null,
         url: null,
       );
     } else {
+
       if (uri
           .toString()
           .contains('https://demo.myfatoorah.com/En/KWT/PayInvoice/Result')) {
-        await controller
-            .evaluateJavascript(
-                source:
-                    "document.getElementsByClassName('white-text')[0]['outerText'];")
-            .then((value) async {
-          if (value.toString().contains('PAID')) {
-            var isSuccess = true;
-            var isError = false;
-            PaymentStatus status = isSuccess && !isError
-                ? PaymentStatus.Success
-                : PaymentStatus.Error;
+
+         /* await controller
+              .evaluateJavascript(
+              source:
+              "document.getElementsByClassName('white-text')[0]['outerText'];"
+          )
+              .then((value) async {
             setState(() {
-              success = true;
               message = 'Redirect on $_start secound';
             });
-            paymentResponse = PaymentResponse(
-              status,
+            if (value.toString().contains('PAID')) {
+              return PaymentResponse(
+                PaymentStatus.Success,
+                paymentId: uri.queryParameters["paymentId"],
+                url: uri.toString(),
+              );
+            } else {
+              return PaymentResponse(
+                PaymentStatus.Error,
+                paymentId: uri.queryParameters["paymentId"],
+                url: uri.toString(),
+              );
+            }
+          });*/
+
+        var res = await  http.post(Uri.parse("${widget.myFatoorahRequest.url}/v2/GetPaymentStatus"),
+            body: {
+              "Key": uri.queryParameters["paymentId"],
+              "KeyType": "PaymentId",
+            },
+            headers: {
+              "Authorization": "Bearer ${widget.myFatoorahRequest.token}"
+            });
+
+        if(res.statusCode == 200){
+          GetPaymentsStatus getPaymentsStatus =  getPaymentsStatusFromJson(res.body);
+          if(getPaymentsStatus.data.invoiceStatus == "Paid"){
+            return PaymentResponse(
+              PaymentStatus.Success,
               paymentId: uri.queryParameters["paymentId"],
               url: uri.toString(),
             );
-          } else {
-            var isSuccess = false;
-            var isError = true;
+          }else if (getPaymentsStatus.data.invoiceTransactions[0].transactionStatus == "Succss"){
+            return PaymentResponse(
+              PaymentStatus.Success,
+              paymentId: uri.queryParameters["paymentId"],
+              url: uri.toString(),
+            );
+          }else {
             setState(() {
-              failed = true;
+              // failed = true;
               message = 'Redirect on $_start secound';
             });
-            PaymentStatus status = isSuccess && !isError
-                ? PaymentStatus.Success
-                : PaymentStatus.Error;
-            paymentResponse = PaymentResponse(
-              status,
+            return PaymentResponse(
+              PaymentStatus.Error,
               paymentId: uri.queryParameters["paymentId"],
               url: uri.toString(),
             );
           }
+        }
+
+        setState(() {
+          // failed = true;
+          message = 'Redirect on $_start secound';
         });
-      }
-    }
-    return paymentResponse ??
-        PaymentResponse(
-          PaymentStatus.None,
-          paymentId: null,
+        return PaymentResponse(
+          PaymentStatus.Error,
+          paymentId: uri.queryParameters["paymentId"],
           url: uri.toString(),
         );
+
+      }
+    }
+
+    return PaymentResponse(
+      PaymentStatus.None,
+      paymentId: null,
+      url: uri.toString(),
+    );
   }
 }

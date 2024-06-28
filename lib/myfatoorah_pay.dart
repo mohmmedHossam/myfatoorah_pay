@@ -2,10 +2,12 @@ library myfatoorah_pay;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:http/http.dart' as http;
+import 'package:myfatoorah_pay/response/get_payment_status.dart';
 
 part './enums/currency_iso.dart';
 part './enums/language.dart';

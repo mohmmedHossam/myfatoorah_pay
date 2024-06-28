@@ -249,6 +249,7 @@ class _PaymentMethodsBuilderState extends State<_PaymentMethodsBuilder>
           uri: Uri.parse(url),
           getAppBar: widget.getAppBar,
           afterPaymentBehaviour: widget.afterPaymentBehaviour,
+          myFatoorahRequest: widget.request,
         ),
       ),
     ).then((value) {
