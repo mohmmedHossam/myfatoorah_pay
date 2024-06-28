@@ -1,17 +1,17 @@
 name: myfatoorah_pay
 description: implement MyFatoorah Sdk for android & ios devoloped By SMZ team adding redirect automaticly with payment respose=>(PaymenStatus , PaymentId , Url) .
-version: 1.0.3
+version: 1.0.4
 homepage: https://github.com/mohmmedHossam/myfatoorah_pay.git
 
 environment:
-  sdk: ">=2.17.6 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.4
-  flutter_inappwebview: ^5.4.2
+  http: ^1.2.1
+  flutter_inappwebview: ^5.8.0
 
 dev_dependencies:
   flutter_test:

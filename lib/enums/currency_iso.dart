@@ -1,6 +1,6 @@
 part of myfatoorah_pay;
 
-enum Country {
+enum MFCountry {
   Kuwait,
   SaudiArabia,
   Bahrain,
@@ -11,24 +11,24 @@ enum Country {
   Egypt,
 }
 
-Map<Country, String> _currencies = {
-  Country.Kuwait: "KWD",
-  Country.SaudiArabia: "SAR",
-  Country.Bahrain: "BHD",
-  Country.UAE: "AED",
-  Country.Qatar: "QAR",
-  Country.Oman: "OMR",
-  Country.Jordan: "JOD",
-  Country.Egypt: "EGY",
+Map<MFCountry, String> _currencies = {
+  MFCountry.Kuwait: "KWD",
+  MFCountry.SaudiArabia: "SAR",
+  MFCountry.Bahrain: "BHD",
+  MFCountry.UAE: "AED",
+  MFCountry.Qatar: "QAR",
+  MFCountry.Oman: "OMR",
+  MFCountry.Jordan: "JOD",
+  MFCountry.Egypt: "EGY",
 };
 
-Map<Country, String> mobiles = {
-  Country.Kuwait: "+965",
-  Country.SaudiArabia: "+966",
-  Country.Bahrain: "+973",
-  Country.UAE: "+971",
-  Country.Qatar: "+974",
-  Country.Oman: "+968",
-  Country.Jordan: "+962",
-  Country.Egypt: "+20",
+Map<MFCountry, String> mobiles = {
+  MFCountry.Kuwait: "+965",
+  MFCountry.SaudiArabia: "+966",
+  MFCountry.Bahrain: "+973",
+  MFCountry.UAE: "+971",
+  MFCountry.Qatar: "+974",
+  MFCountry.Oman: "+968",
+  MFCountry.Jordan: "+962",
+  MFCountry.Egypt: "+20",
 };

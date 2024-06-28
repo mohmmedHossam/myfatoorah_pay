@@ -44,7 +44,7 @@ class MyfatoorahRequest {
   final String token;
 
   ///Language of  displaying payment methods
-  final ApiLanguage language;
+  final MFApiLanguage language;
 
   /// The amount you are seeking to charge the customer and accepts decimal value e.g. 2.500
   final double invoiceAmount;
@@ -81,7 +81,7 @@ class MyfatoorahRequest {
 
 
   /// The currency code that you need to charge your customer through
-  final Country currencyIso;
+  final MFCountry currencyIso;
 
   /// Customer mobile number country code
   final String? mobileCountryCode;

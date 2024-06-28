@@ -1,8 +1,8 @@
 part of myfatoorah_pay;
 
-enum ApiLanguage { Arabic, English }
+enum MFApiLanguage { Arabic, English }
 
-Map<ApiLanguage, String> _languages = {
-  ApiLanguage.Arabic: "AR",
-  ApiLanguage.English: "EN",
+Map<MFApiLanguage, String> _languages = {
+  MFApiLanguage.Arabic: "AR",
+  MFApiLanguage.English: "EN",
 };

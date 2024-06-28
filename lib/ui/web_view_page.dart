@@ -100,7 +100,7 @@ class __WebViewPageState extends State<_WebViewPage>
   void onBack() {}
 
   late Timer _timer;
-  int _start = 5;
+  int _start = 3;
 
   @override
   void dispose() {
@@ -151,8 +151,8 @@ class __WebViewPageState extends State<_WebViewPage>
           bottom: 0,
           child: AnimatedOpacity(
             opacity: child == null ? 0 : 1,
-            duration: Duration(milliseconds: 300),
-            child: child ?? SizedBox(),
+            duration: const Duration(milliseconds: 300),
+            child: child ?? const SizedBox(),
           ),
         ),
       ],
@@ -165,7 +165,7 @@ class __WebViewPageState extends State<_WebViewPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AnimatedSize(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             child: SizedBox(
               height: progress == null ? 0 : 5,
               child: LinearProgressIndicator(value: progress ?? 0),

@@ -65,12 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 var response = await MyFatoorahPay.startPayment(
                   context: context,
                   request: MyfatoorahRequest.test(
-                    currencyIso: Country.SaudiArabia,
+                    currencyIso: MFCountry.SaudiArabia,
                     invoiceAmount: 100,
-                    language: ApiLanguage.English,
+                    language: MFApiLanguage.English,
                     token: myFatoorahApi, // 'your api token'
                   ),
                 );
+                debugPrint("isSuccess ${response.isSuccess}");
+
                 if (response.isSuccess) {
                   // payment success ... do something after payed
                 } else {

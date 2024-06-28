@@ -8,7 +8,7 @@ class PaymentMethod {
   String get paymentMethodEn => _paymentMethodEn;
 
   String get paymentMethod =>
-      language == ApiLanguage.English ? _paymentMethodEn : _paymentMethodAr;
+      language == MFApiLanguage.English ? _paymentMethodEn : _paymentMethodAr;
   late String paymentMethodCode;
   late bool isDirectPayment;
   late double serviceCharge;
@@ -17,7 +17,7 @@ class PaymentMethod {
   double get totalWithoutCharge => _totalAmount;
   late String currencyIso;
   late String imageUrl;
-  ApiLanguage? language;
+  MFApiLanguage? language;
 
   PaymentMethod.fromJson(Map<String, dynamic> json) {
     paymentMethodId = int.tryParse(
@@ -38,7 +38,7 @@ class PaymentMethod {
     currencyIso = json['CurrencyIso'] ?? json['currencyIso'] ?? "";
     imageUrl = json['ImageUrl'] ?? json['imageUrl'] ?? "";
   }
-  PaymentMethod withLanguage(ApiLanguage _language) {
+  PaymentMethod withLanguage(MFApiLanguage _language) {
     return PaymentMethod.fromJson({})
       .._paymentMethodAr = _paymentMethodAr
       .._paymentMethodEn = _paymentMethodEn
